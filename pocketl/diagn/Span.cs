@@ -5,11 +5,11 @@ namespace pocketl.diagn
 {
     public class Span
     {
-        public string unit;
+        public H<mod.Unit>? unit;
         public uint start, end;
 
 
-        public Span(string unit, uint start, uint end)
+        public Span(H<mod.Unit>? unit, uint start, uint end)
         {
             this.unit = unit;
             this.start = start;
@@ -19,7 +19,7 @@ namespace pocketl.diagn
 
         public static Span operator +(Span a, Span b)
         {
-            if (a.unit != b.unit)
+            if (a.unit?.id != b.unit?.id)
                 throw new Exception("spans point to different units");
 
             return new Span(
