@@ -35,27 +35,26 @@ namespace pocketl
         }
 
 
-        public H<mod.Package> AddPackage(string name, util.FileSystem filesystem, string unitName)
+        public H<mod.Package> AddPackage(string name, util.FileSystem filesystem)
         {
-            var hPackage = this.packages.Reserve();
-
-            var package = new mod.Package
+            return this.packages.Add(new mod.Package
             {
                 name = name,
                 filesystem = filesystem
-            };
+            });
+        }
 
-            var hUnit = this.units.Reserve();
 
-            var unit = new mod.Unit
+        public H<mod.Unit> AddUnit(H<mod.Package> hPackage, string name)
+        {
+            var hUnit = this.units.Add(new mod.Unit
             {
-                name = unitName,
+                name = name,
                 package = hPackage
-            };
+            });
 
-            package.units.Add(hUnit);
-
-            return hPackage;
+            this.packages[hPackage].units.Add(hUnit);
+            return hUnit;
         }
     }
 }

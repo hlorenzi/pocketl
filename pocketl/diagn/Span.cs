@@ -6,14 +6,20 @@ namespace pocketl.diagn
     public class Span
     {
         public H<mod.Unit>? unit;
-        public uint start, end;
+        public int start, end;
 
 
-        public Span(H<mod.Unit>? unit, uint start, uint end)
+        public Span(H<mod.Unit>? unit, int start, int end)
         {
             this.unit = unit;
             this.start = start;
             this.end = end;
+        }
+
+
+        public int Length
+        {
+            get { return this.end - this.start; }
         }
 
 
