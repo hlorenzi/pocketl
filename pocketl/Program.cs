@@ -14,6 +14,10 @@
             var reporter = new diagn.ReporterDefault();
 
             pass.Tokenizer.Tokenize(ctx, reporter, unit);
+            pass.Parser.Parse(ctx, reporter, unit);
+
+            reporter.PrintToConsole(ctx);
+            System.Console.ReadKey();
         }
     }
 }

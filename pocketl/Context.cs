@@ -12,6 +12,7 @@ namespace pocketl
         public HandleManager<mod.Package> packages = new HandleManager<mod.Package>();
         public HandleManager<mod.Unit> units = new HandleManager<mod.Unit>();
         public HandleManager<syn.Token> tokens = new HandleManager<syn.Token>();
+        public HandleManager<syn.Node> nodes = new HandleManager<syn.Node>();
 
 
         public mod.Package this[H<mod.Package> handle]
@@ -32,6 +33,13 @@ namespace pocketl
         {
             get { return this.tokens[handle]; }
             set { this.tokens[handle] = value; }
+        }
+
+
+        public syn.Node this[H<syn.Node> handle]
+        {
+            get { return this.nodes[handle]; }
+            set { this.nodes[handle] = value; }
         }
 
 

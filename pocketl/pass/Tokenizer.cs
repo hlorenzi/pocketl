@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace pocketl.pass
 {
-    public class Tokenizer
+    public static class Tokenizer
     {
         public static void Tokenize(Context ctx, diagn.Reporter reporter, H<mod.Unit> hUnit)
         {

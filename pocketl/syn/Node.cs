@@ -11,6 +11,12 @@ namespace pocketl.syn
         }
 
 
+        public class Error : Node
+        {
+
+        }
+
+
         public class TopLevel : Node
         {
             public List<H<Node>> defs = new List<H<Node>>();

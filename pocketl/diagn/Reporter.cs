@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace pocketl.diagn
@@ -55,6 +56,19 @@ namespace pocketl.diagn
                 descr = descr,
                 carets = carets
             });
+        }
+
+
+        public void PrintToConsole(Context ctx)
+        {
+            foreach (var msg in this.messages)
+                this.PrintMessageToConsole(ctx, msg);
+        }
+
+
+        void PrintMessageToConsole(Context ctx, Message msg)
+        {
+            Console.WriteLine(msg.descr);
         }
     }
 }

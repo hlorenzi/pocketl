@@ -8,6 +8,7 @@ namespace pocketl.mod
         public string name;
         public H<Package> package;
         public List<H<syn.Token>> tokens;
+        public H<syn.Node> ast;
 
 
         public string ReadSource(Context ctx)

@@ -23,6 +23,18 @@ namespace pocketl.diagn
         }
 
 
+        public Span JustBefore
+        {
+            get { return new Span(this.unit, this.start, this.start); }
+        }
+
+
+        public Span JustAfter
+        {
+            get { return new Span(this.unit, this.end, this.end); }
+        }
+
+
         public static Span operator +(Span a, Span b)
         {
             if (a.unit?.id != b.unit?.id)

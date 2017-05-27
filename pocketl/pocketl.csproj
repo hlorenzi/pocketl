@@ -48,9 +48,11 @@
     <Compile Include="diagn\Reporter.cs" />
     <Compile Include="diagn\Span.cs" />
     <Compile Include="mod\Unit.cs" />
+    <Compile Include="pass\Parser.cs" />
     <Compile Include="pass\Tokenizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="syn\Node.cs" />
     <Compile Include="syn\Token.cs" />
     <Compile Include="util\FileSystem.cs" />
     <Compile Include="HandleManager.cs" />
