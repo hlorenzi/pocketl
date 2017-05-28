@@ -54,6 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="syn\Node.cs" />
     <Compile Include="syn\Token.cs" />
+    <Compile Include="util\CharCounter.cs" />
     <Compile Include="util\FileSystem.cs" />
     <Compile Include="HandleManager.cs" />
   </ItemGroup>
