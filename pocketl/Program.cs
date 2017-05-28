@@ -5,7 +5,7 @@
         static void Main(string[] args)
         {
             var filesystem = new util.FileSystemMock();
-            filesystem.Add("main.p", "Hello, world!");
+            filesystem.Add("main.p", testCode);
 
             var ctx = new Context();
             var pkg = ctx.AddPackage("test", filesystem);
@@ -17,7 +17,16 @@
             pass.Parser.Parse(ctx, reporter, unit);
 
             reporter.PrintToConsole(ctx);
+            ctx[ctx[unit].ast].PrintToConsole(ctx);
             System.Console.ReadKey();
         }
+
+
+        static string testCode = @"
+            fn hello(x: Int, y: Float)
+            {
+                
+            }
+        ";
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace pocketl.syn
@@ -8,6 +9,32 @@ namespace pocketl.syn
         public virtual IEnumerable<H<Node>> Children()
         {
             yield break;
+        }
+
+
+        public virtual void PrintExtraInfoToConsole(Context ctx)
+        {
+            
+        }
+
+
+        public void PrintToConsole(Context ctx, int indent = 0)
+        {
+            switch (indent % 4)
+            {
+                case 0: Console.ForegroundColor = ConsoleColor.White; break;
+                case 1: Console.ForegroundColor = ConsoleColor.Gray; break;
+                case 2: Console.ForegroundColor = ConsoleColor.DarkGray; break;
+                case 3: Console.ForegroundColor = ConsoleColor.Gray; break;
+            }
+
+            Console.Write(new string(' ', indent * 3));
+            Console.Write(this.GetType().Name);
+            Console.Write(" ");
+            this.PrintExtraInfoToConsole(ctx);
+            Console.WriteLine();
+            foreach (var child in this.Children())
+                ctx[child].PrintToConsole(ctx, indent + 1);
         }
 
 
@@ -91,6 +118,12 @@ namespace pocketl.syn
             public string Excerpt(Context ctx)
             {
                 return ctx[token].excerpt;
+            }
+
+
+            public override void PrintExtraInfoToConsole(Context ctx)
+            {
+                Console.Write("`{0}`", ctx[token].excerpt);
             }
         }
 
