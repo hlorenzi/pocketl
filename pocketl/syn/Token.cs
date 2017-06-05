@@ -16,7 +16,16 @@
         Identifier,
         Number,
         KeywordFn,
+        KeywordType,
         KeywordStruct,
+        KeywordMut,
+        KeywordIf,
+        KeywordElse,
+        KeywordWhile,
+        KeywordLoop,
+        KeywordBreak,
+        KeywordContinue,
+        KeywordReturn,
         BraceOpen,
         BraceClose,
         ParenOpen,
@@ -30,7 +39,10 @@
         Plus,
         Minus,
         Asterisk,
-        Slash
+        Slash,
+        Dollar,
+        ExclamationMark,
+        QuestionMark
     }
 
 
@@ -46,7 +58,16 @@
                 case TokenKind.Identifier: return "identifier";
                 case TokenKind.Number: return "number";
                 case TokenKind.KeywordFn: return "`fn`";
+                case TokenKind.KeywordType: return "`type`";
                 case TokenKind.KeywordStruct: return "`struct`";
+                case TokenKind.KeywordMut: return "`mut`";
+                case TokenKind.KeywordIf: return "`if`";
+                case TokenKind.KeywordElse: return "`else`";
+                case TokenKind.KeywordWhile: return "`while`";
+                case TokenKind.KeywordLoop: return "`loop`";
+                case TokenKind.KeywordBreak: return "`break`";
+                case TokenKind.KeywordContinue: return "`continue`";
+                case TokenKind.KeywordReturn: return "`return`";
                 case TokenKind.BraceOpen: return "`{`";
                 case TokenKind.BraceClose: return "`}`";
                 case TokenKind.ParenOpen: return "`(`";
@@ -61,6 +82,9 @@
                 case TokenKind.Minus: return "`-`";
                 case TokenKind.Asterisk: return "`*`";
                 case TokenKind.Slash: return "`/`";
+                case TokenKind.Dollar: return "`$`";
+                case TokenKind.ExclamationMark: return "`!`";
+                case TokenKind.QuestionMark: return "`?`";
                 default: return "unknown";
             }
         }

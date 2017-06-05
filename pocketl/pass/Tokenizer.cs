@@ -92,8 +92,20 @@ namespace pocketl.pass
                 new Match("-", syn.TokenKind.Minus),
                 new Match("*", syn.TokenKind.Asterisk),
                 new Match("/", syn.TokenKind.Slash),
+                new Match("$", syn.TokenKind.Dollar),
+                new Match("!", syn.TokenKind.ExclamationMark),
+                new Match("?", syn.TokenKind.QuestionMark),
                 new Match("fn", syn.TokenKind.KeywordFn),
-                new Match("struct", syn.TokenKind.KeywordStruct)
+                new Match("type", syn.TokenKind.KeywordType),
+                new Match("struct", syn.TokenKind.KeywordStruct),
+                new Match("mut", syn.TokenKind.KeywordMut),
+                new Match("if", syn.TokenKind.KeywordIf),
+                new Match("else", syn.TokenKind.KeywordElse),
+                new Match("while", syn.TokenKind.KeywordWhile),
+                new Match("loop", syn.TokenKind.KeywordLoop),
+                new Match("break", syn.TokenKind.KeywordBreak),
+                new Match("continue", syn.TokenKind.KeywordContinue),
+                new Match("return", syn.TokenKind.KeywordReturn),
             };
 
             // Check whether one of the models match.
