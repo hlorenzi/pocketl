@@ -12,31 +12,28 @@ namespace pocketl.pass
             var src = unit.ReadSource(ctx);
             var index = 0;
 
-            unit.tokens = new List<H<syn.Token>>();
+            unit.tokens = new List<syn.Token>();
 
             while (index < src.Length)
             {
                 var match =
                     TryMatchFixed(src, index) ??
-                    TryMatchVarying(syn.TokenKind.Whitespace, src, index, IsWhitespace,       IsWhitespace) ??
-                    TryMatchVarying(syn.TokenKind.Identifier, src, index, IsIdentifierPrefix, IsIdentifier) ??
-                    TryMatchVarying(syn.TokenKind.Number,     src, index, IsNumberPrefix,     IsNumber) ??
+                    TryMatchFilter(syn.TokenKind.Whitespace, src, index, IsWhitespace,       IsWhitespace) ??
+                    TryMatchFilter(syn.TokenKind.Identifier, src, index, IsIdentifierPrefix, IsIdentifier) ??
+                    TryMatchFilter(syn.TokenKind.Number,     src, index, IsNumberPrefix,     IsNumber) ??
                     new Match(src[index].ToString(), syn.TokenKind.Error);
 
                 var span = new diagn.Span(hUnit, index, index + match.excerpt.Length);
 
-                // Signal errors.
                 if (match.kind == syn.TokenKind.Error)
                     reporter.Error("unexpected character", new diagn.Caret(span));
 
-                var hToken = ctx.tokens.Add(new syn.Token
+                unit.tokens.Add(new syn.Token
                 {
                     span = span,
                     kind = match.kind,
                     excerpt = match.excerpt
                 });
-
-                unit.tokens.Add(hToken);
 
                 index += match.excerpt.Length;
             }
@@ -57,7 +54,7 @@ namespace pocketl.pass
         }
 
 
-        static Match TryMatchVarying(
+        static Match TryMatchFilter(
             syn.TokenKind kind,
             string src, int index,
             System.Func<char, bool> filterPrefix,

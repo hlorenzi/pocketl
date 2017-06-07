@@ -17,7 +17,7 @@
             pass.Parser.Parse(ctx, reporter, unit);
 
             reporter.PrintToConsole(ctx);
-            ctx[ctx[unit].ast].PrintToConsole(ctx);
+            ctx[unit].ast.PrintToConsole(ctx);
             System.Console.ReadKey();
         }
 

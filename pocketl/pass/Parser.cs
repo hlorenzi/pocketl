@@ -28,7 +28,7 @@ namespace pocketl.pass
             }
             catch (ParseException)
             {
-                unit.ast = ctx.nodes.Add(new Node.TopLevel());
+                unit.ast = new Node.TopLevel();
             }
         }
 
@@ -41,7 +41,7 @@ namespace pocketl.pass
 
         private Context ctx;
         private diagn.Reporter reporter;
-        private List<H<Token>> tokens;
+        private List<Token> tokens;
         private int index;
         private Stack<bool> insideCondition;
 
@@ -78,7 +78,7 @@ namespace pocketl.pass
 
         private Token Current
         {
-            get { return this.ctx[this.tokens[this.index]]; }
+            get { return this.tokens[this.index]; }
         }
 
 
@@ -87,9 +87,9 @@ namespace pocketl.pass
             get
             {
                 if (this.index >= this.tokens.Count)
-                    return this.ctx[this.tokens[this.tokens.Count - 1]].span.JustAfter;
+                    return this.tokens[this.tokens.Count - 1].span.JustAfter;
                 else
-                    return this.ctx[this.tokens[this.index]].span.JustBefore;
+                    return this.tokens[this.index].span.JustBefore;
             }
         }
 
@@ -105,17 +105,17 @@ namespace pocketl.pass
             if (this.index + n >= this.tokens.Count)
                 return false;
 
-            return this.ctx[this.tokens[this.index + n]].kind == kind;
+            return this.tokens[this.index + n].kind == kind;
         }
 
 
-        private H<Token> Expect(TokenKind kind)
+        private Token Expect(TokenKind kind)
         {
             if (this.NextNthIs(0, kind))
             {
-                var hToken = this.tokens[this.index];
+                var token = this.tokens[this.index];
                 this.Advance();
-                return hToken;
+                return token;
             }
             else
             {
@@ -125,13 +125,13 @@ namespace pocketl.pass
         }
 
 
-        private H<Token>? ExpectMaybe(TokenKind kind)
+        private Token ExpectMaybe(TokenKind kind)
         {
             if (this.NextNthIs(0, kind))
             {
-                var hToken = this.tokens[this.index];
+                var token = this.tokens[this.index];
                 this.Advance();
-                return hToken;
+                return token;
             }
             else
             {
@@ -140,9 +140,9 @@ namespace pocketl.pass
         }
 
 
-        private List<H<Node>> ParseList(TokenKind separator, TokenKind terminator, System.Func<H<Node>> parseItemFunc)
+        private List<Node> ParseList(TokenKind separator, TokenKind terminator, System.Func<Node> parseItemFunc)
         {
-            var list = new List<H<Node>>();
+            var list = new List<Node>();
 
             while (!this.IsOver && this.Current.kind != terminator)
             {
@@ -156,34 +156,34 @@ namespace pocketl.pass
         }
 
 
-        private H<Node> ParseTopLevel()
+        private Node ParseTopLevel()
         {
             var node = new Node.TopLevel();
 
             while (!this.IsOver)
                 node.defs.Add(this.ParseExpr());
 
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseIdentifier()
+        private Node ParseIdentifier()
         {
             var node = new Node.Identifier();
             node.token = this.Expect(TokenKind.Identifier);
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseNumber()
+        private Node ParseNumber()
         {
             var node = new Node.Number();
             node.token = this.Expect(TokenKind.Number);
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseType()
+        private Node ParseType()
         {
             switch (this.Current.kind)
             {
@@ -196,21 +196,21 @@ namespace pocketl.pass
         }
 
 
-        private H<Node> ParseTypeStructure()
+        private Node ParseTypeStructure()
         {
             var node = new Node.TypeStructure();
             node.name = this.ParseIdentifier();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseExpr()
+        private Node ParseExpr()
         {
             return this.ParseExprOperator(0);
         }
 
 
-        private H<Node> ParseFunctionDef()
+        private Node ParseFunctionDef()
         {
             var node = new Node.FunctionDef();
             this.Expect(TokenKind.KeywordFn);
@@ -218,118 +218,117 @@ namespace pocketl.pass
             this.Expect(TokenKind.ParenOpen);
             node.parameters = this.ParseList(TokenKind.Comma, TokenKind.ParenClose, this.ParseFunctionDefParam);
 
-            if (this.ExpectMaybe(TokenKind.Arrow).HasValue)
+            if (this.ExpectMaybe(TokenKind.Arrow) != null)
                 node.returnType = this.ParseType();
 
             node.body = this.ParseBlock();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseFunctionDefParam()
+        private Node ParseFunctionDefParam()
         {
             var node = new Node.FunctionDefParameter();
             node.name = this.ParseIdentifier();
             this.Expect(TokenKind.Colon);
             node.type = this.ParseType();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseStructureDef()
+        private Node ParseStructureDef()
         {
             var node = new Node.StructureDef();
             this.Expect(TokenKind.KeywordType);
             node.name = this.ParseIdentifier();
             this.Expect(TokenKind.BraceOpen);
             node.fields = this.ParseList(TokenKind.Comma, TokenKind.BraceClose, this.ParseStructureDefField);
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseStructureDefField()
+        private Node ParseStructureDefField()
         {
             var node = new Node.StructureDefField();
             node.name = this.ParseIdentifier();
             this.Expect(TokenKind.Colon);
             node.type = this.ParseType();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseBlock()
+        private Node ParseBlock()
         {
             var node = new Node.Block();
             this.Expect(TokenKind.BraceOpen);
             this.insideCondition.Push(false);
             node.exprs = this.ParseList(TokenKind.Semicolon, TokenKind.BraceClose, this.ParseExpr);
             this.insideCondition.Pop();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseParenthesizedOrLiteralTuple()
+        private Node ParseParenthesizedOrLiteralTuple()
         {
             this.Expect(TokenKind.ParenOpen);
 
-            if (this.ExpectMaybe(TokenKind.ParenClose).HasValue)
-                return this.ctx.nodes.Add(new Node.LiteralTuple());
+            if (this.ExpectMaybe(TokenKind.ParenClose) != null)
+                return new Node.LiteralTuple();
 
             this.insideCondition.Push(false);
 
-            var exprs = new List<H<Node>>();
+            var exprs = new List<Node>();
             exprs.Add(this.ParseExpr());
 
-            if (this.ExpectMaybe(TokenKind.Comma).HasValue)
+            if (this.ExpectMaybe(TokenKind.Comma) != null)
             {
                 exprs.AddRange(this.ParseList(TokenKind.Comma, TokenKind.ParenClose, this.ParseExpr));
+                this.insideCondition.Pop();
 
                 var node = new Node.LiteralTuple();
                 node.elems = exprs;
-
-                this.insideCondition.Pop();
-                return this.ctx.nodes.Add(node);
+                return node;
             }
             else
             {
+                this.Expect(TokenKind.ParenClose);
+                this.insideCondition.Pop();
+
                 var node = new Node.Parenthesized();
                 node.inner = exprs[0];
-                this.Expect(TokenKind.ParenClose);
-
-                this.insideCondition.Pop();
-                return this.ctx.nodes.Add(node);
+                return node;
             }
         }
 
 
-        private H<Node> ParseIdentifierOrLiteralStructure()
+        private Node ParseIdentifierOrLiteralStructure()
         {
             var ident = this.ParseIdentifier();
 
-            if (!this.insideCondition.Peek() && this.ExpectMaybe(TokenKind.BraceOpen).HasValue)
+            if (!this.insideCondition.Peek() && this.ExpectMaybe(TokenKind.BraceOpen) != null)
             {
                 var fields = this.ParseList(TokenKind.Comma, TokenKind.BraceClose, this.ParseLiteralStructureField);
                 var node = new Node.LiteralStructure();
                 node.type = ident;
                 node.fields = fields;
-                return this.ctx.nodes.Add(node);
+                return node;
             }
             else
                 return ident;
         }
 
 
-        private H<Node> ParseLiteralStructureField()
+        private Node ParseLiteralStructureField()
         {
             var node = new Node.LiteralStructureField();
             node.name = this.ParseIdentifier();
             this.Expect(TokenKind.Equal);
             node.value = this.ParseExpr();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseIf()
+        private Node ParseIf()
         {
             var node = new Node.If();
             this.Expect(TokenKind.KeywordIf);
@@ -338,14 +337,14 @@ namespace pocketl.pass
             this.insideCondition.Pop();
             node.trueBlock = this.ParseBlock();
 
-            if (this.ExpectMaybe(TokenKind.KeywordElse).HasValue)
+            if (this.ExpectMaybe(TokenKind.KeywordElse) != null)
                 node.falseBlock = this.ParseBlock();
 
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseWhile()
+        private Node ParseWhile()
         {
             var node = new Node.While();
             this.Expect(TokenKind.KeywordWhile);
@@ -353,36 +352,36 @@ namespace pocketl.pass
             node.condition = this.ParseExpr();
             this.insideCondition.Pop();
             node.block = this.ParseBlock();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseLoop()
+        private Node ParseLoop()
         {
             var node = new Node.Loop();
             this.Expect(TokenKind.KeywordLoop);
             node.block = this.ParseBlock();
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseBreak()
+        private Node ParseBreak()
         {
             var node = new Node.Break();
             this.Expect(TokenKind.KeywordBreak);
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseContinue()
+        private Node ParseContinue()
         {
             var node = new Node.Continue();
             this.Expect(TokenKind.KeywordContinue);
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
-        private H<Node> ParseReturn()
+        private Node ParseReturn()
         {
             var node = new Node.Return();
             this.Expect(TokenKind.KeywordReturn);
@@ -393,7 +392,7 @@ namespace pocketl.pass
                 this.Current.kind != TokenKind.Semicolon)
                 node.expr = this.ParseExpr();
 
-            return this.ctx.nodes.Add(node);
+            return node;
         }
 
 
@@ -493,7 +492,7 @@ namespace pocketl.pass
         }
 
 
-        private H<Node> ParseExprOperator(int level)
+        private Node ParseExprOperator(int level)
         {
             if (level >= operators.Length)
                 return this.ParseExprLeaf();
@@ -505,7 +504,7 @@ namespace pocketl.pass
                 var node = new Node.UnaryOperation();
                 node.op = unaryPrefixMatch.unaryOp;
                 node.expr = this.ParseExprOperator(level);
-                return this.ctx.nodes.Add(node);
+                return node;
             }
 
             // Match binary operators.
@@ -529,7 +528,7 @@ namespace pocketl.pass
                 node.lhs = lhs;
                 node.rhs = rhs;
 
-                lhs = this.ctx.nodes.Add(node);
+                lhs = node;
 
                 if (isRightAssoc)
                     return lhs;
@@ -547,14 +546,14 @@ namespace pocketl.pass
                 var node = new Node.UnaryOperation();
                 node.op = unarySuffixMatch.unaryOp;
                 node.expr = expr;
-                expr = this.ctx.nodes.Add(node);
+                expr = node;
             }
 
             return expr;
         }
 
 
-        private H<Node> ParseExprLeaf()
+        private Node ParseExprLeaf()
         {
             switch (this.Current.kind)
             {
