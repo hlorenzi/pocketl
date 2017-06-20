@@ -37,6 +37,12 @@ namespace pocketl.diagn
 
         public static Span operator +(Span a, Span b)
         {
+            if (a == null)
+                return new Span(b.unit, b.start, b.end);
+
+            if (b == null)
+                return new Span(a.unit, a.start, a.end);
+
             if (a.unit?.id != b.unit?.id)
                 throw new Exception("spans point to different units");
 

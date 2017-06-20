@@ -6,6 +6,28 @@ namespace pocketl.syn
 {
     public class Node
     {
+        public diagn.Span span;
+
+
+        public void AddSpan(diagn.Span span)
+        {
+            if (this.span == null)
+                this.span = span;
+            else
+                this.span += span;
+        }
+
+
+        public void AddChildrenSpansRecursively()
+        {
+            foreach (var child in this.Children())
+            {
+                child.AddChildrenSpansRecursively();
+                this.AddSpan(child.span);
+            }
+        }
+
+
         public virtual IEnumerable<Node> Children()
         {
             yield break;

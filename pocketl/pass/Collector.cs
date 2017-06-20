@@ -26,13 +26,15 @@
 
             var hDef = ctx.defs.Reserve();
             ctx[hDef] = new sema.Def.Structure();
+            ctx[hDef].defSpan = node.span;
             unit.semanticMap.def[node] = hDef;
 
             if (node.name != null)
             {
-                var name = (node.name as syn.Node.Identifier).token.excerpt;
-                var hNamespaceNode = ctx.names.FindOrReserve(name);
+                var identifierToken = (node.name as syn.Node.Identifier).token;
+                var hNamespaceNode = ctx.names.FindOrReserve(identifierToken.excerpt);
                 hNamespaceNode.item = new sema.Namespace.Item.Def { def = hDef };
+                ctx[hDef].defNameSpan = identifierToken.span;
                 ctx[hDef].hNamespaceNode = hNamespaceNode;
                 unit.semanticMap.references[node] = hNamespaceNode;
                 unit.semanticMap.references[node.name] = hNamespaceNode;
@@ -47,13 +49,15 @@
 
             var hDef = ctx.defs.Reserve();
             ctx[hDef] = new sema.Def.Function();
+            ctx[hDef].defSpan = node.span;
             unit.semanticMap.def[node] = hDef;
 
             if (node.name != null)
             {
-                var identifier = (node.name as syn.Node.Identifier).token.excerpt;
-                var hNamespaceNode = ctx.names.FindOrReserve(identifier);
+                var identifierToken = (node.name as syn.Node.Identifier).token;
+                var hNamespaceNode = ctx.names.FindOrReserve(identifierToken.excerpt);
                 hNamespaceNode.item = new sema.Namespace.Item.Def { def = hDef };
+                ctx[hDef].defNameSpan = identifierToken.span;
                 ctx[hDef].hNamespaceNode = hNamespaceNode;
                 unit.semanticMap.references[node] = hNamespaceNode;
                 unit.semanticMap.references[node.name] = hNamespaceNode;

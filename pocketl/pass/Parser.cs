@@ -16,6 +16,7 @@ namespace pocketl.pass
                 reporter = reporter,
                 tokens = unit.tokens,
                 index = 0,
+                indexPrevious = 0,
                 insideCondition = new Stack<bool>()
             };
 
@@ -25,6 +26,7 @@ namespace pocketl.pass
             try
             {
                 unit.ast = parser.ParseTopLevel();
+                unit.ast.AddChildrenSpansRecursively();
             }
             catch (ParseException)
             {
@@ -42,7 +44,7 @@ namespace pocketl.pass
         private Context ctx;
         private diagn.Reporter reporter;
         private List<Token> tokens;
-        private int index;
+        private int index, indexPrevious;
         private Stack<bool> insideCondition;
 
 
@@ -60,6 +62,7 @@ namespace pocketl.pass
 
         private void Advance()
         {
+            this.indexPrevious = this.index;
             this.index++;
             this.SkipIgnorable();
         }
@@ -79,6 +82,12 @@ namespace pocketl.pass
         private Token Current
         {
             get { return this.tokens[this.index]; }
+        }
+
+
+        private Token Previous
+        {
+            get { return this.tokens[this.indexPrevious]; }
         }
 
 
@@ -171,6 +180,7 @@ namespace pocketl.pass
         {
             var node = new Node.Identifier();
             node.token = this.Expect(TokenKind.Identifier);
+            node.AddSpan(node.token.span);
             return node;
         }
 
@@ -179,6 +189,7 @@ namespace pocketl.pass
         {
             var node = new Node.Number();
             node.token = this.Expect(TokenKind.Number);
+            node.AddSpan(node.token.span);
             return node;
         }
 
@@ -213,7 +224,7 @@ namespace pocketl.pass
         private Node ParseFunctionDef()
         {
             var node = new Node.FunctionDef();
-            this.Expect(TokenKind.KeywordFn);
+            node.AddSpan(this.Expect(TokenKind.KeywordFn).span);
             node.name = this.ParseIdentifier();
             this.Expect(TokenKind.ParenOpen);
             node.parameters = this.ParseList(TokenKind.Comma, TokenKind.ParenClose, this.ParseFunctionDefParam);
@@ -239,7 +250,7 @@ namespace pocketl.pass
         private Node ParseStructureDef()
         {
             var node = new Node.StructureDef();
-            this.Expect(TokenKind.KeywordType);
+            node.AddSpan(this.Expect(TokenKind.KeywordType).span);
             node.name = this.ParseIdentifier();
             this.Expect(TokenKind.BraceOpen);
             node.fields = this.ParseList(TokenKind.Comma, TokenKind.BraceClose, this.ParseStructureDefField);
@@ -260,20 +271,26 @@ namespace pocketl.pass
         private Node ParseBlock()
         {
             var node = new Node.Block();
-            this.Expect(TokenKind.BraceOpen);
+            node.AddSpan(this.Expect(TokenKind.BraceOpen).span);
             this.insideCondition.Push(false);
             node.exprs = this.ParseList(TokenKind.Semicolon, TokenKind.BraceClose, this.ParseExpr);
             this.insideCondition.Pop();
+            node.AddSpan(this.Previous.span);
             return node;
         }
 
 
         private Node ParseParenthesizedOrLiteralTuple()
         {
-            this.Expect(TokenKind.ParenOpen);
+            var openParenToken = this.Expect(TokenKind.ParenOpen);
 
             if (this.ExpectMaybe(TokenKind.ParenClose) != null)
-                return new Node.LiteralTuple();
+            {
+                var node = new Node.LiteralTuple();
+                node.AddSpan(openParenToken.span);
+                node.AddSpan(this.Previous.span);
+                return node;
+            }
 
             this.insideCondition.Push(false);
 
@@ -286,6 +303,8 @@ namespace pocketl.pass
                 this.insideCondition.Pop();
 
                 var node = new Node.LiteralTuple();
+                node.AddSpan(openParenToken.span);
+                node.AddSpan(this.Previous.span);
                 node.elems = exprs;
                 return node;
             }
@@ -295,6 +314,8 @@ namespace pocketl.pass
                 this.insideCondition.Pop();
 
                 var node = new Node.Parenthesized();
+                node.AddSpan(openParenToken.span);
+                node.AddSpan(this.Previous.span);
                 node.inner = exprs[0];
                 return node;
             }
@@ -311,6 +332,7 @@ namespace pocketl.pass
                 var node = new Node.LiteralStructure();
                 node.type = ident;
                 node.fields = fields;
+                node.AddSpan(this.Previous.span);
                 return node;
             }
             else
@@ -331,7 +353,7 @@ namespace pocketl.pass
         private Node ParseIf()
         {
             var node = new Node.If();
-            this.Expect(TokenKind.KeywordIf);
+            node.AddSpan(this.Expect(TokenKind.KeywordIf).span);
             this.insideCondition.Push(true);
             node.condition = this.ParseExpr();
             this.insideCondition.Pop();
@@ -347,7 +369,7 @@ namespace pocketl.pass
         private Node ParseWhile()
         {
             var node = new Node.While();
-            this.Expect(TokenKind.KeywordWhile);
+            node.AddSpan(this.Expect(TokenKind.KeywordWhile).span);
             this.insideCondition.Push(true);
             node.condition = this.ParseExpr();
             this.insideCondition.Pop();
@@ -359,7 +381,7 @@ namespace pocketl.pass
         private Node ParseLoop()
         {
             var node = new Node.Loop();
-            this.Expect(TokenKind.KeywordLoop);
+            node.AddSpan(this.Expect(TokenKind.KeywordLoop).span);
             node.block = this.ParseBlock();
             return node;
         }
@@ -368,7 +390,7 @@ namespace pocketl.pass
         private Node ParseBreak()
         {
             var node = new Node.Break();
-            this.Expect(TokenKind.KeywordBreak);
+            node.AddSpan(this.Expect(TokenKind.KeywordBreak).span);
             return node;
         }
 
@@ -376,7 +398,7 @@ namespace pocketl.pass
         private Node ParseContinue()
         {
             var node = new Node.Continue();
-            this.Expect(TokenKind.KeywordContinue);
+            node.AddSpan(this.Expect(TokenKind.KeywordContinue).span);
             return node;
         }
 
@@ -384,7 +406,7 @@ namespace pocketl.pass
         private Node ParseReturn()
         {
             var node = new Node.Return();
-            this.Expect(TokenKind.KeywordReturn);
+            node.AddSpan(this.Expect(TokenKind.KeywordReturn).span);
 
             if (this.Current.kind != TokenKind.BraceClose &&
                 this.Current.kind != TokenKind.ParenClose &&
