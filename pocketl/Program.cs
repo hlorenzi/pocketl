@@ -13,11 +13,16 @@
 
             var reporter = new diagn.ReporterDefault();
 
+            ctx.AddPrimitives();
+
             pass.Tokenizer.Tokenize(ctx, reporter, unit);
             pass.Parser.Parse(ctx, reporter, unit);
+            pass.Collector.Collect(ctx, reporter, unit);
+            pass.NameResolver.Resolve(ctx, reporter, unit);
 
             reporter.PrintToConsole(ctx);
-            ctx[unit].ast.PrintToConsole(ctx);
+            ctx[unit].ast.PrintToConsole(ctx, ctx[unit].semanticMap);
+            ctx.names.PrintToConsole(ctx);
             System.Console.ReadKey();
         }
 
@@ -26,11 +31,14 @@
             type Test
             {
                 x: Int,
-                y: Float
+                y: UInt64
             }
 
             fn hello(x: Int, y: Float)
             {
+                a = Test { };
+                a = hello;
+
                 a;
                 a = b + c + d;
                 a = b = c + d * e + f;

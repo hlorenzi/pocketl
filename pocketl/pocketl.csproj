@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>pocketl</RootNamespace>
     <AssemblyName>pocketl</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,10 +49,15 @@
     <Compile Include="diagn\Reporter.cs" />
     <Compile Include="diagn\Span.cs" />
     <Compile Include="mod\Unit.cs" />
+    <Compile Include="pass\Collector.cs" />
+    <Compile Include="pass\NameResolver.cs" />
     <Compile Include="pass\Parser.cs" />
     <Compile Include="pass\Tokenizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="sema\Def.cs" />
+    <Compile Include="sema\Map.cs" />
+    <Compile Include="sema\Namespace.cs" />
     <Compile Include="syn\Node.cs" />
     <Compile Include="syn\Token.cs" />
     <Compile Include="util\CharCounter.cs" />

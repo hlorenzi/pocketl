@@ -18,7 +18,7 @@ namespace pocketl.syn
         }
 
 
-        public void PrintToConsole(Context ctx, int indent = 0)
+        public void PrintToConsole(Context ctx, sema.Map semanticMap = null, int indent = 0)
         {
             switch (indent % 4)
             {
@@ -32,9 +32,16 @@ namespace pocketl.syn
             Console.Write(this.GetType().Name);
             Console.Write(" ");
             this.PrintExtraInfoToConsole(ctx);
+
+            if (semanticMap != null)
+            {
+                Console.Write(" ");
+                semanticMap.PrintExtraInfoToConsole(ctx, this);
+            }
+
             Console.WriteLine();
             foreach (var child in this.Children())
-                child.PrintToConsole(ctx, indent + 1);
+                child.PrintToConsole(ctx, semanticMap, indent + 1);
         }
 
 

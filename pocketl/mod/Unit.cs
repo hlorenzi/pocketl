@@ -9,6 +9,7 @@ namespace pocketl.mod
         public H<Package> package;
         public List<syn.Token> tokens;
         public syn.Node ast;
+        public sema.Map semanticMap = new sema.Map();
 
 
         public string ReadSource(Context ctx)
