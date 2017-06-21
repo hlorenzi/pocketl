@@ -32,12 +32,19 @@
             if (node.name != null)
             {
                 var identifierToken = (node.name as syn.Node.Identifier).token;
-                var hNamespaceNode = ctx.names.FindOrReserve(identifierToken.excerpt);
-                hNamespaceNode.item = new sema.Namespace.Item.Def { def = hDef };
                 ctx[hDef].defNameSpan = identifierToken.span;
-                ctx[hDef].hNamespaceNode = hNamespaceNode;
-                unit.semanticMap.references[node] = hNamespaceNode;
-                unit.semanticMap.references[node.name] = hNamespaceNode;
+
+                var hNamespaceNode = ctx.names.FindOrReserve(identifierToken.excerpt);
+                if (hNamespaceNode.item != null)
+                    ReportDuplicate(ctx, reporter, identifierToken.span, hNamespaceNode);
+
+                else
+                {
+                    hNamespaceNode.item = new sema.Namespace.Item.Def { def = hDef };
+                    ctx[hDef].hNamespaceNode = hNamespaceNode;
+                    unit.semanticMap.references[node] = hNamespaceNode;
+                    unit.semanticMap.references[node.name] = hNamespaceNode;
+                }
             }
         }
 
@@ -55,12 +62,42 @@
             if (node.name != null)
             {
                 var identifierToken = (node.name as syn.Node.Identifier).token;
-                var hNamespaceNode = ctx.names.FindOrReserve(identifierToken.excerpt);
-                hNamespaceNode.item = new sema.Namespace.Item.Def { def = hDef };
                 ctx[hDef].defNameSpan = identifierToken.span;
-                ctx[hDef].hNamespaceNode = hNamespaceNode;
-                unit.semanticMap.references[node] = hNamespaceNode;
-                unit.semanticMap.references[node.name] = hNamespaceNode;
+
+                var hNamespaceNode = ctx.names.FindOrReserve(identifierToken.excerpt);
+                if (hNamespaceNode.item != null)
+                    ReportDuplicate(ctx, reporter, identifierToken.span, hNamespaceNode);
+
+                else
+                {
+                    hNamespaceNode.item = new sema.Namespace.Item.Def { def = hDef };
+                    ctx[hDef].hNamespaceNode = hNamespaceNode;
+                    unit.semanticMap.references[node] = hNamespaceNode;
+                    unit.semanticMap.references[node.name] = hNamespaceNode;
+                }
+            }
+        }
+
+
+        private static void ReportDuplicate(Context ctx, diagn.Reporter reporter, diagn.Span newSpan, sema.Namespace.Node originalNode)
+        {
+            var originalSpan = (diagn.Span)null;
+
+            var originalItemDef = originalNode.item as sema.Namespace.Item.Def;
+            if (originalItemDef != null)
+                originalSpan = ctx[originalItemDef.def].defNameSpan;
+
+            if (originalSpan != null)
+            {
+                reporter.Error(
+                    "duplicate definition of `" + ctx.names.PrintableFullKeyOf(originalNode) + "`",
+                    new diagn.Caret(newSpan), new diagn.Caret(originalSpan, false));
+            }
+            else
+            {
+                reporter.Error(
+                    "duplicate definition of `" + ctx.names.PrintableFullKeyOf(originalNode) + "`",
+                    new diagn.Caret(newSpan));
             }
         }
     }
