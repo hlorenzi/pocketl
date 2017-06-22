@@ -40,15 +40,15 @@
                     var duplicateField = structureDef.fields.Find(f => f.name == fieldName);
                     if (duplicateField != null)
                         reporter.Error("duplicate field `" + fieldName + "`",
-                            new diagn.Caret(duplicateField.defNameSpan, false),
+                            new diagn.Caret(duplicateField.spanDefName, false),
                             new diagn.Caret(nodeIdentifier.span));
 
                     var fieldType = TypeResolver.Resolve(ctx, reporter, nodeField.type);
 
                     structureDef.fields.Add(new sema.Def.Structure.Field
                     {
-                        defSpan = nodeField.span,
-                        defNameSpan = nodeIdentifier.span,
+                        spanDef = nodeField.span,
+                        spanDefName = nodeIdentifier.span,
                         name = fieldName,
                         type = fieldType
                     });

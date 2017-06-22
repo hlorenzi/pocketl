@@ -27,7 +27,7 @@ namespace pocketl.sema
 
             public override string PrintableName(Context ctx)
             {
-                return ctx.names.PrintableFullKeyOf(ctx[def].hNamespaceNode);
+                return ctx.names.PrintableFullKeyOf(ctx[def].namespaceNode);
             }
         }
 

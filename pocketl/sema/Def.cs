@@ -6,9 +6,9 @@ namespace pocketl.sema
 {
     public abstract class Def
     {
-        public diagn.Span defSpan;
-        public diagn.Span defNameSpan;
-        public Namespace.Node hNamespaceNode;
+        public diagn.Span spanDef;
+        public diagn.Span spanDefName;
+        public Namespace.Node namespaceNode;
 
 
         public virtual void PrintToConsole(Context ctx, int indent = 0)
@@ -21,8 +21,8 @@ namespace pocketl.sema
         {
             public class Field
             {
-                public diagn.Span defSpan;
-                public diagn.Span defNameSpan;
+                public diagn.Span spanDef;
+                public diagn.Span spanDefName;
                 public string name;
                 public Type type;
             }
@@ -50,14 +50,14 @@ namespace pocketl.sema
         {
             public class Parameter
             {
-                public diagn.Span defSpan;
-                public diagn.Span defNameSpan;
+                public diagn.Span spanDef;
+                public diagn.Span spanDefName;
                 public string name;
                 public Type type;
             }
 
 
-            public diagn.Span returnTypeSpan;
+            public diagn.Span spanReturnType;
             public Type returnType;
             public List<Parameter> parameters = new List<Parameter>();
 

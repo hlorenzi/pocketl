@@ -74,7 +74,7 @@
                 var hDef = this.defs.Reserve();
                 var hNamespaceNode = this.names.FindOrReserve(name);
 
-                this[hDef] = new sema.Def.Structure { hNamespaceNode = hNamespaceNode };
+                this[hDef] = new sema.Def.Structure { namespaceNode = hNamespaceNode };
                 hNamespaceNode.item = new sema.Namespace.Item.Def { def = hDef };
                 return hDef;
             };
