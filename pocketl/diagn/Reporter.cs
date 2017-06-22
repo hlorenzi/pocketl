@@ -6,6 +6,7 @@ namespace pocketl.diagn
 {
     public interface Reporter
     {
+        void InternalError(string descr, params Caret[] carets);
         void Error(string descr, params Caret[] carets);
     }
 
@@ -41,10 +42,22 @@ namespace pocketl.diagn
 
         enum MessageKind
         {
+            InternalError,
             Error,
             Warning,
             Info,
             Lint
+        }
+
+
+        void Reporter.InternalError(string descr, params Caret[] carets)
+        {
+            this.messages.Add(new Message
+            {
+                kind = MessageKind.InternalError,
+                descr = descr,
+                carets = new List<Caret>(carets)
+            });
         }
 
 
@@ -78,10 +91,10 @@ namespace pocketl.diagn
             Console.ForegroundColor = ConsoleColor.Gray;
 
             // Print location.
-            var primaryCaret = msg.carets.Find(c => c.primary && c.span.unit.HasValue);
+            var primaryCaret = msg.carets.Find(c => c.primary && c.span.unit != null);
             if (primaryCaret != null)
             {
-                var unit = ctx.units[primaryCaret.span.unit.Value];
+                var unit = ctx.units[primaryCaret.span.unit];
                 var src = unit.ReadSource(ctx);
 
                 var unitName = unit.name;
@@ -99,6 +112,11 @@ namespace pocketl.diagn
             ConsoleColor textColor = ConsoleColor.White;
             switch (msg.kind)
             {
+                case MessageKind.InternalError:
+                    textColor = ConsoleColor.Red;
+                    Console.ForegroundColor = textColor;
+                    Console.Write("internal compiler error: ");
+                    break;
                 case MessageKind.Error:
                     textColor = ConsoleColor.Red;
                     Console.ForegroundColor = textColor;
@@ -141,12 +159,12 @@ namespace pocketl.diagn
                     curCaret++;
                 }
 
-                if (!carets[0].span.unit.HasValue)
+                if (carets[0].span.unit == null)
                     continue;
 
                 // Collect line numbers that will be printed.
                 // Also collect surrounding lines for contextual aid.
-                var unit = ctx.units[carets[0].span.unit.Value];
+                var unit = ctx.units[carets[0].span.unit];
                 var src = unit.ReadSource(ctx);
                 var srcLineCount = util.CharCounter.LineCount(src);
                 var surrounding = 2;

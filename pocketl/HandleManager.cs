@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace pocketl
 {
-    public struct H<T> where T: class
+    public class H<T> where T: class
     {
         public uint id;
     }

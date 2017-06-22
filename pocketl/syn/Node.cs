@@ -111,13 +111,13 @@ namespace pocketl.syn
 
         public class FunctionDefParameter : Node
         {
-            public Node name;
+            public Node identifier;
             public Node type;
 
 
             public override IEnumerable<Node> Children()
             {
-                yield return this.name;
+                yield return this.identifier;
                 yield return this.type;
             }
         }
@@ -141,13 +141,13 @@ namespace pocketl.syn
 
         public class StructureDefField : Node
         {
-            public Node name;
+            public Node identifier;
             public Node type;
 
 
             public override IEnumerable<Node> Children()
             {
-                yield return this.name;
+                yield return this.identifier;
                 yield return this.type;
             }
         }

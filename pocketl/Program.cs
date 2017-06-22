@@ -19,10 +19,11 @@
             pass.Parser.Parse(ctx, reporter, unit);
             pass.Collector.Collect(ctx, reporter, unit);
             pass.NameResolver.Resolve(ctx, reporter, unit);
+            pass.StructureResolver.Resolve(ctx, reporter, unit);
 
-            reporter.PrintToConsole(ctx);
             ctx[unit].ast.PrintToConsole(ctx, ctx[unit].semanticMap);
-            ctx.names.PrintToConsole(ctx);
+            ctx.names.PrintToConsole(ctx, true);
+            reporter.PrintToConsole(ctx);
             System.Console.ReadKey();
         }
 
@@ -31,7 +32,11 @@
             type Test
             {
                 x: Int,
-                y: UInt64
+                y: UInt64,
+                z: FooBar,
+                w: hello,
+                a: Test,
+                x: Float32
             }
 
             fn hello(x: Int, y: Float)

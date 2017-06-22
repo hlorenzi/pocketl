@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace pocketl.sema
@@ -7,24 +8,64 @@ namespace pocketl.sema
     {
         public diagn.Span defSpan;
         public diagn.Span defNameSpan;
-        public sema.Namespace.Node hNamespaceNode;
+        public Namespace.Node hNamespaceNode;
+
+
+        public virtual void PrintToConsole(Context ctx, int indent = 0)
+        {
+
+        }
 
 
         public class Structure : Def
         {
             public class Field
             {
+                public diagn.Span defSpan;
+                public diagn.Span defNameSpan;
                 public string name;
+                public Type type;
             }
 
 
             public List<Field> fields = new List<Field>();
+
+
+            public override void PrintToConsole(Context ctx, int indent = 0)
+            {
+                Console.WriteLine("type");
+
+                foreach (var field in this.fields)
+                {
+                    Console.Write(new string(' ', indent * 3));
+                    Console.Write(field.name);
+                    Console.Write(": ");
+                    Console.WriteLine(field.type.PrintableName(ctx));
+                }
+            }
         }
 
 
         public class Function : Def
         {
+            public class Parameter
+            {
+                public diagn.Span defSpan;
+                public diagn.Span defNameSpan;
+                public string name;
+                public Type type;
+            }
 
+
+            public diagn.Span returnTypeSpan;
+            public Type returnType;
+            public List<Parameter> parameters = new List<Parameter>();
+
+
+            public override void PrintToConsole(Context ctx, int indent = 0)
+            {
+                Console.WriteLine("fn");
+            }
         }
     }
 }

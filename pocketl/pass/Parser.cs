@@ -240,7 +240,7 @@ namespace pocketl.pass
         private Node ParseFunctionDefParam()
         {
             var node = new Node.FunctionDefParameter();
-            node.name = this.ParseIdentifier();
+            node.identifier = this.ParseIdentifier();
             this.Expect(TokenKind.Colon);
             node.type = this.ParseType();
             return node;
@@ -261,7 +261,7 @@ namespace pocketl.pass
         private Node ParseStructureDefField()
         {
             var node = new Node.StructureDefField();
-            node.name = this.ParseIdentifier();
+            node.identifier = this.ParseIdentifier();
             this.Expect(TokenKind.Colon);
             node.type = this.ParseType();
             return node;
