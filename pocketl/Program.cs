@@ -32,11 +32,13 @@
             type Test
             {
                 x: Int,
-                y: UInt64,
-                z: FooBar,
-                w: hello,
-                a: Test,
-                x: Float32
+                y: (UInt64, Float, $Int8, *mut UInt16),
+                z: fn(FooBar, ***Bool, $$mut$Int32),
+                w: fn(hello) -> Bool,
+                a: *Test,
+                b: *mut Float32,
+                c: $Int,
+                d: $mut Int
             }
 
             fn hello(x: Int, y: Float)

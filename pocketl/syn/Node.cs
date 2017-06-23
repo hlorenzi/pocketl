@@ -201,6 +201,62 @@ namespace pocketl.syn
         }
 
 
+        public class TypePointer : Node
+        {
+            public bool mutable;
+            public Node innerType;
+
+
+            public override IEnumerable<Node> Children()
+            {
+                yield return this.innerType;
+            }
+        }
+
+
+        public class TypeRefCounted : Node
+        {
+            public bool mutable;
+            public Node innerType;
+
+
+            public override IEnumerable<Node> Children()
+            {
+                yield return this.innerType;
+            }
+        }
+
+
+        public class TypeTuple : Node
+        {
+            public List<Node> elements = new List<Node>();
+
+
+            public override IEnumerable<Node> Children()
+            {
+                foreach (var elem in this.elements)
+                    yield return elem;
+            }
+        }
+
+
+        public class TypeFunction : Node
+        {
+            public List<Node> parameters = new List<Node>();
+            public Node returnType;
+
+
+            public override IEnumerable<Node> Children()
+            {
+                foreach (var p in this.parameters)
+                    yield return p;
+
+                if (this.returnType != null)
+                    yield return this.returnType;
+            }
+        }
+
+
         public class Block : Node
         {
             public List<Node> exprs = new List<Node>();

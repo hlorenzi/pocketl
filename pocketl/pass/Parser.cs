@@ -200,6 +200,19 @@ namespace pocketl.pass
             {
                 case TokenKind.Identifier:
                     return this.ParseTypeStructure();
+
+                case TokenKind.Asterisk:
+                    return this.ParseTypePointer();
+
+                case TokenKind.Dollar:
+                    return this.ParseTypeRefCounted();
+
+                case TokenKind.ParenOpen:
+                    return this.ParseTypeTuple();
+
+                case TokenKind.KeywordFn:
+                    return this.ParseTypeFunction();
+
                 default:
                     this.ErrorBeforeCurrent("expected type");
                     throw new ParseException();
@@ -211,6 +224,57 @@ namespace pocketl.pass
         {
             var node = new Node.TypeStructure();
             node.name = this.ParseIdentifier();
+            return node;
+        }
+
+
+        private Node ParseTypePointer()
+        {
+            var node = new Node.TypePointer();
+            node.AddSpan(this.Expect(TokenKind.Asterisk).span);
+
+            if (this.ExpectMaybe(TokenKind.KeywordMut) != null)
+                node.mutable = true;
+
+            node.innerType = this.ParseType();
+            return node;
+        }
+
+
+        private Node ParseTypeRefCounted()
+        {
+            var node = new Node.TypeRefCounted();
+            node.AddSpan(this.Expect(TokenKind.Dollar).span);
+
+            if (this.ExpectMaybe(TokenKind.KeywordMut) != null)
+                node.mutable = true;
+
+            node.innerType = this.ParseType();
+            return node;
+        }
+
+
+        private Node ParseTypeTuple()
+        {
+            var node = new Node.TypeTuple();
+            node.AddSpan(this.Expect(TokenKind.ParenOpen).span);
+            node.elements = this.ParseList(TokenKind.Comma, TokenKind.ParenClose, this.ParseType);
+            node.AddSpan(this.Previous.span);
+            return node;
+        }
+
+
+        private Node ParseTypeFunction()
+        {
+            var node = new Node.TypeFunction();
+            node.AddSpan(this.Expect(TokenKind.KeywordFn).span);
+            this.Expect(TokenKind.ParenOpen);
+            node.parameters = this.ParseList(TokenKind.Comma, TokenKind.ParenClose, this.ParseType);
+            node.AddSpan(this.Previous.span);
+
+            if (this.ExpectMaybe(TokenKind.Arrow) != null)
+                node.returnType = this.ParseType();
+
             return node;
         }
 

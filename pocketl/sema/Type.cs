@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 
 namespace pocketl.sema
@@ -32,16 +33,72 @@ namespace pocketl.sema
         }
 
 
+        public class Pointer : Type
+        {
+            public bool mutable;
+            public Type innerType;
+
+
+            public override string PrintableName(Context ctx)
+            {
+                return (this.mutable ? "*mut " : "*") + this.innerType.PrintableName(ctx);
+            }
+        }
+
+
+        public class RefCounted : Type
+        {
+            public bool mutable;
+            public Type innerType;
+
+
+            public override string PrintableName(Context ctx)
+            {
+                return (this.mutable ? "$mut " : "$") + this.innerType.PrintableName(ctx);
+            }
+        }
+
+
         public class Tuple : Type
         {
             public List<Type> types = new List<Type>();
+
+            
+            public override string PrintableName(Context ctx)
+            {
+                var str = "(";
+                for (var i = 0; i < this.types.Count; i++)
+                {
+                    if (i > 0)
+                        str += ", ";
+
+                    str += this.types[i].PrintableName(ctx);
+                }
+
+                return str + ")";
+            }
         }
 
 
         public class Function : Type
         {
-            public Type returntype;
-            public List<Type> args = new List<Type>();
+            public Type returnType;
+            public List<Type> parameters = new List<Type>();
+
+
+            public override string PrintableName(Context ctx)
+            {
+                var str = "fn(";
+                for (var i = 0; i < this.parameters.Count; i++)
+                {
+                    if (i > 0)
+                        str += ", ";
+
+                    str += this.parameters[i].PrintableName(ctx);
+                }
+
+                return str + ") -> " + this.returnType.PrintableName(ctx);
+            }
         }
     }
 }
