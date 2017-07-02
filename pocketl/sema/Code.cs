@@ -27,30 +27,28 @@ namespace pocketl.sema
             }
 
 
-            public void PrintToConsole(Context ctx, int indent = 0)
+            public void PrintDebug(util.Output output, Context ctx)
             {
                 for (var i = 0; i < this.registers.Count; i++)
                 {
                     var reg = this.registers[i];
-                    Console.Write(new string(' ', indent * 3));
-                    Console.Write("r#" + i);
+                    output.Write("r#" + i);
 
                     if (reg.name != null)
-                        Console.Write(" `" + reg.name + "`");
+                        output.Write(" `" + reg.name + "`");
 
-                    Console.Write(": ");
-                    Console.WriteLine(reg.type.PrintableName(ctx));
+                    output.Write(": ");
+                    output.WriteLine(reg.type.PrintableName(ctx));
                 }
 
                 if (this.registers.Count > 0 && this.segments.Count > 0)
-                    Console.WriteLine();
+                    output.WriteLine();
 
                 for (var i = 0; i < this.segments.Count; i++)
                 {
-                    Console.Write(new string(' ', indent * 3));
-                    Console.WriteLine("s#" + i + ":");
-                    this.segments[i].PrintToConsole(ctx, indent + 1);
-                    Console.WriteLine();
+                    output.WriteLine("s#" + i + ":");
+                    this.segments[i].PrintDebug(output.Indented, ctx);
+                    output.WriteLine();
                 }
             }
         }
@@ -71,25 +69,23 @@ namespace pocketl.sema
             public Terminator terminator;
 
             
-            public void PrintToConsole(Context ctx, int indent = 0)
+            public void PrintDebug(util.Output output, Context ctx)
             {
                 foreach (var instr in this.instrs)
                 {
-                    Console.Write(new string(' ', indent * 3));
-                    instr.PrintToConsole(ctx);
-                    Console.WriteLine();
+                    instr.PrintDebug(output, ctx);
+                    output.WriteLine();
                 }
 
-                Console.Write(new string(' ', indent * 3));
-                terminator.PrintToConsole(ctx);
-                Console.WriteLine();
+                terminator.PrintDebug(output, ctx);
+                output.WriteLine();
             }
         }
 
 
         public abstract class Terminator
         {
-            public virtual void PrintToConsole(Context ctx)
+            public virtual void PrintDebug(util.Output output, Context ctx)
             {
 
             }
@@ -97,9 +93,9 @@ namespace pocketl.sema
 
             public class Return : Terminator
             {
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    Console.Write("return");
+                    output.Write("return");
                 }
             }
 
@@ -109,9 +105,9 @@ namespace pocketl.sema
                 public int segmentIndex;
 
 
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    Console.Write("goto s#" + segmentIndex);
+                    output.Write("goto s#" + segmentIndex);
                 }
             }
 
@@ -123,11 +119,11 @@ namespace pocketl.sema
                 public int falseSegmentIndex;
 
 
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    Console.Write("branch r#" + conditionRegisterIndex);
-                    Console.Write(" ? s#" + trueSegmentIndex);
-                    Console.Write(" : s#" + falseSegmentIndex);
+                    output.Write("branch r#" + conditionRegisterIndex);
+                    output.Write(" ? s#" + trueSegmentIndex);
+                    output.Write(" : s#" + falseSegmentIndex);
                 }
             }
         }
@@ -154,9 +150,16 @@ namespace pocketl.sema
             public Lvalue destination;
 
 
-            public virtual void PrintToConsole(Context ctx)
+            public virtual void PrintDebug(util.Output output, Context ctx)
             {
 
+            }
+
+
+            protected void PrintDebugExcerpt(util.Output output, Context ctx)
+            {
+                output.AlignColumn(40);
+                output.Write("# " + this.span.Excerpt(ctx));
             }
 
 
@@ -184,18 +187,19 @@ namespace pocketl.sema
                 public List<int> sources = new List<int>();
 
 
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    this.destination.PrintToConsole(ctx);
-                    Console.Write(" = (");
+                    this.destination.PrintDebug(output, ctx);
+                    output.Write(" = (");
                     for (var i = 0; i < this.sources.Count; i++)
                     {
                         if (i > 0)
-                            Console.Write(", ");
+                            output.Write(", ");
 
-                        Console.Write("r#" + this.sources[i]);
+                        output.Write("r#" + this.sources[i]);
                     }
-                    Console.Write(")");
+                    output.Write(")");
+                    this.PrintDebugExcerpt(output, ctx);
                 }
             }
 
@@ -218,11 +222,12 @@ namespace pocketl.sema
                 public Lvalue source;
 
 
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    this.destination.PrintToConsole(ctx);
-                    Console.Write(" = ");
-                    this.source.PrintToConsole(ctx);
+                    this.destination.PrintDebug(output, ctx);
+                    output.Write(" = ");
+                    this.source.PrintDebug(output, ctx);
+                    this.PrintDebugExcerpt(output, ctx);
                 }
             }
         }
@@ -233,7 +238,7 @@ namespace pocketl.sema
             public diagn.Span span;
 
 
-            public virtual void PrintToConsole(Context ctx)
+            public virtual void PrintDebug(util.Output output, Context ctx)
             {
 
             }
@@ -241,18 +246,18 @@ namespace pocketl.sema
 
             public class Error : Lvalue
             {
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    Console.Write("<error>");
+                    output.Write("<error>");
                 }
             }
 
 
             public class Discard : Lvalue
             {
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    Console.Write("_");
+                    output.Write("_");
                 }
             }
 
@@ -262,9 +267,9 @@ namespace pocketl.sema
                 public int index;
 
 
-                public override void PrintToConsole(Context ctx)
+                public override void PrintDebug(util.Output output, Context ctx)
                 {
-                    Console.Write("r#" + index);
+                    output.Write("r#" + index);
                 }
             }
         }

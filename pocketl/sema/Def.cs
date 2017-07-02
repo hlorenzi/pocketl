@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 
 
@@ -11,7 +10,7 @@ namespace pocketl.sema
         public Namespace.Node namespaceNode;
 
 
-        public virtual void PrintToConsole(Context ctx, int indent = 0)
+        public virtual void PrintDebug(util.Output output, Context ctx)
         {
 
         }
@@ -31,16 +30,16 @@ namespace pocketl.sema
             public List<Field> fields = new List<Field>();
 
 
-            public override void PrintToConsole(Context ctx, int indent = 0)
+            public override void PrintDebug(util.Output output, Context ctx)
             {
-                Console.WriteLine("type");
+                output.WriteLine("type");
+                output = output.Indented;
 
                 foreach (var field in this.fields)
                 {
-                    Console.Write(new string(' ', indent * 3));
-                    Console.Write(field.name);
-                    Console.Write(": ");
-                    Console.WriteLine(field.type.PrintableName(ctx));
+                    output.Write(field.name);
+                    output.Write(": ");
+                    output.WriteLine(field.type.PrintableName(ctx));
                 }
             }
         }
@@ -51,10 +50,10 @@ namespace pocketl.sema
             public Code.Body body;
 
 
-            public override void PrintToConsole(Context ctx, int indent = 0)
+            public override void PrintDebug(util.Output output, Context ctx)
             {
-                Console.WriteLine("fn");
-                this.body.PrintToConsole(ctx, indent);
+                output.WriteLine("fn");
+                this.body.PrintDebug(output.Indented, ctx);
             }
         }
     }

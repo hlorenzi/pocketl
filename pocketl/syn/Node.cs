@@ -34,36 +34,35 @@ namespace pocketl.syn
         }
 
 
-        public virtual void PrintExtraInfoToConsole(Context ctx)
+        public void PrintDebug(util.Output output, Context ctx, sema.Map semanticMap = null)
         {
-            
-        }
-
-
-        public void PrintToConsole(Context ctx, sema.Map semanticMap = null, int indent = 0)
-        {
-            switch (indent % 4)
+            switch (output.Indentation % 4)
             {
-                case 0: Console.ForegroundColor = ConsoleColor.White; break;
-                case 1: Console.ForegroundColor = ConsoleColor.Gray; break;
-                case 2: Console.ForegroundColor = ConsoleColor.DarkGray; break;
-                case 3: Console.ForegroundColor = ConsoleColor.Gray; break;
+                case 0: output = output.WithColor(ConsoleColor.White); break;
+                case 1: output = output.WithColor(ConsoleColor.Gray); break;
+                case 2: output = output.WithColor(ConsoleColor.DarkGray); break;
+                case 3: output = output.WithColor(ConsoleColor.Gray); break;
             }
 
-            Console.Write(new string(' ', indent * 3));
-            Console.Write(this.GetType().Name);
-            Console.Write(" ");
-            this.PrintExtraInfoToConsole(ctx);
+            output.Write(this.GetType().Name);
+            output.Write(" ");
+            this.PrintDebugExtra(output, ctx);
 
             if (semanticMap != null)
             {
-                Console.Write(" ");
-                semanticMap.PrintExtraInfoToConsole(ctx, this);
+                output.Write(" ");
+                semanticMap.PrintDebugExtra(output, ctx, this);
             }
 
-            Console.WriteLine();
+            output.WriteLine();
             foreach (var child in this.Children())
-                child.PrintToConsole(ctx, semanticMap, indent + 1);
+                child.PrintDebug(output.Indented, ctx, semanticMap);
+        }
+
+
+        public virtual void PrintDebugExtra(util.Output output, Context ctx)
+        {
+
         }
 
 
@@ -164,9 +163,9 @@ namespace pocketl.syn
             }
 
 
-            public override void PrintExtraInfoToConsole(Context ctx)
+            public override void PrintDebugExtra(util.Output output, Context ctx)
             {
-                Console.Write("`{0}`", this.token.excerpt);
+                output.Write("`" + this.token.excerpt + "`");
             }
         }
 
@@ -182,9 +181,9 @@ namespace pocketl.syn
             }
 
 
-            public override void PrintExtraInfoToConsole(Context ctx)
+            public override void PrintDebugExtra(util.Output output, Context ctx)
             {
-                Console.Write("`{0}`", this.token.excerpt);
+                output.Write("`" + this.token.excerpt + "`");
             }
         }
 
@@ -446,15 +445,15 @@ namespace pocketl.syn
             }
 
 
-            public override void PrintExtraInfoToConsole(Context ctx)
+            public override void PrintDebugExtra(util.Output output, Context ctx)
             {
                 switch (this.op)
                 {
-                    case UnaryOperator.RefCount: Console.Write("($)"); break;
-                    case UnaryOperator.RefCountMut: Console.Write("($mut)"); break;
-                    case UnaryOperator.Negate: Console.Write("(-)"); break;
-                    case UnaryOperator.Not: Console.Write("(!_)"); break;
-                    case UnaryOperator.Unwrap: Console.Write("(_!)"); break;
+                    case UnaryOperator.RefCount: output.Write("($)"); break;
+                    case UnaryOperator.RefCountMut: output.Write("($mut)"); break;
+                    case UnaryOperator.Negate: output.Write("(-)"); break;
+                    case UnaryOperator.Not: output.Write("(!_)"); break;
+                    case UnaryOperator.Unwrap: output.Write("(_!)"); break;
                 }
             }
         }
@@ -485,16 +484,16 @@ namespace pocketl.syn
             }
 
 
-            public override void PrintExtraInfoToConsole(Context ctx)
+            public override void PrintDebugExtra(util.Output output, Context ctx)
             {
                 switch (this.op)
                 {
-                    case BinaryOperator.Assign: Console.Write("(=)"); break;
-                    case BinaryOperator.FieldAccess: Console.Write("(.)"); break;
-                    case BinaryOperator.Add: Console.Write("(+)"); break;
-                    case BinaryOperator.Subtract: Console.Write("(-)"); break;
-                    case BinaryOperator.Multiply: Console.Write("(*)"); break;
-                    case BinaryOperator.Divide: Console.Write("(/)"); break;
+                    case BinaryOperator.Assign: output.Write("(=)"); break;
+                    case BinaryOperator.FieldAccess: output.Write("(.)"); break;
+                    case BinaryOperator.Add: output.Write("(+)"); break;
+                    case BinaryOperator.Subtract: output.Write("(-)"); break;
+                    case BinaryOperator.Multiply: output.Write("(*)"); break;
+                    case BinaryOperator.Divide: output.Write("(/)"); break;
                 }
             }
         }

@@ -103,34 +103,33 @@ namespace pocketl.sema
         }
 
 
-        public void PrintToConsole(Context ctx, bool printDefs = false)
+        public void PrintDebug(util.Output output, Context ctx, bool printDefs = false)
         {
-            this.PrintNodeToConsole(ctx, this.root, printDefs);
+            this.PrintNodeToConsole(output, ctx, this.root, printDefs);
         }
 
 
-        private void PrintNodeToConsole(Context ctx, Node node, bool printDefs = false, int indent = 0)
+        private void PrintNodeToConsole(util.Output output, Context ctx, Node node, bool printDefs = false)
         {
-            Console.Write(new string(' ', indent * 3));
-            Console.Write(node.name ?? "::root::");
+            output.Write(node.name ?? "::root::");
 
             if (node.item != null)
             {
-                Console.Write(" ");
+                output.Write(" ");
 
                 var itemDef = node.item as Item.Def;
                 if (itemDef != null)
                 {
-                    Console.Write("<def#" + itemDef.def.id + "> ");
+                    output.Write("<def#" + itemDef.def.id + "> ");
                     if (printDefs)
-                        ctx[itemDef.def].PrintToConsole(ctx, indent + 1);
+                        ctx[itemDef.def].PrintDebug(output, ctx);
                 }
             }
 
-            Console.WriteLine();
+            output.WriteLine();
 
             foreach (var child in node.children)
-                PrintNodeToConsole(ctx, child.Value, printDefs, indent + 1);
+                PrintNodeToConsole(output.Indented, ctx, child.Value, printDefs);
         }
     }
 }

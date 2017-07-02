@@ -23,9 +23,11 @@
             pass.FunctionHeaderResolver.Resolve(ctx, reporter, unit);
             pass.FunctionBodyResolver.Resolve(ctx, reporter, unit);
 
-            ctx[unit].ast.PrintToConsole(ctx, ctx[unit].semanticMap);
-            ctx.names.PrintToConsole(ctx, true);
-            reporter.PrintToConsole(ctx);
+            var output = new util.OutputConsole();
+            ctx[unit].ast.PrintDebug(output, ctx, ctx[unit].semanticMap);
+            ctx.names.PrintDebug(output, ctx, true);
+            reporter.Print(output, ctx);
+
             System.Console.ReadKey();
         }
 

@@ -10,13 +10,13 @@ namespace pocketl.sema
         public Dictionary<syn.Node, sema.Namespace.Node> references = new Dictionary<syn.Node, Namespace.Node>();
 
 
-        public void PrintExtraInfoToConsole(Context ctx, syn.Node node)
+        public void PrintDebugExtra(util.Output output, Context ctx, syn.Node node)
         {
             if (this.def.TryGetValue(node, out var def))
-                Console.Write("<def#" + def.id + "> ");
+                output.Write("<def#" + def.id + "> ");
 
             if (this.references.TryGetValue(node, out var references))
-                Console.Write("<refs `" + ctx.names.PrintableFullKeyOf(references) + "`> ");
+                output.Write("<refs `" + ctx.names.PrintableFullKeyOf(references) + "`> ");
         }
     }
 }

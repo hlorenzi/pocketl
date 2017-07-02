@@ -72,23 +72,19 @@ namespace pocketl.diagn
         }
 
 
-        public void PrintToConsole(Context ctx)
+        public void Print(util.Output output, Context ctx)
         {
-            var prevForegroundColor = Console.ForegroundColor;
-
             foreach (var msg in this.messages)
             {
-                this.PrintMessageToConsole(ctx, msg);
-                Console.WriteLine();
+                this.PrintMessage(output.Cloned, ctx, msg);
+                output.WriteLine();
             }
-
-            Console.ForegroundColor = prevForegroundColor;
         }
 
 
-        void PrintMessageToConsole(Context ctx, Message msg)
+        void PrintMessage(util.Output output, Context ctx, Message msg)
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            output.SetColor(ConsoleColor.Gray);
 
             // Print location.
             var primaryCaret = msg.carets.Find(c => c.primary && c.span.unit != null);
@@ -100,13 +96,13 @@ namespace pocketl.diagn
                 var unitName = unit.name;
                 var start = util.CharCounter.LineColumnOfIndex(src, primaryCaret.span.start);
                 var end = util.CharCounter.LineColumnOfIndex(src, primaryCaret.span.end);
-                Console.WriteLine("{0}:{1}:{2} {3}:{4}:",
+                output.WriteLine("{0}:{1}:{2} {3}:{4}:",
                     unitName,
                     start.line + 1, start.column + 1,
                     end.line + 1, end.column + 1);
             }
             else
-                Console.WriteLine("<unknown location>:");
+                output.WriteLine("<unknown location>:");
 
             // Print description.
             ConsoleColor textColor = ConsoleColor.White;
@@ -114,32 +110,32 @@ namespace pocketl.diagn
             {
                 case MessageKind.InternalError:
                     textColor = ConsoleColor.Red;
-                    Console.ForegroundColor = textColor;
-                    Console.Write("internal compiler error: ");
+                    output.SetColor(textColor);
+                    output.Write("internal compiler error: ");
                     break;
                 case MessageKind.Error:
                     textColor = ConsoleColor.Red;
-                    Console.ForegroundColor = textColor;
-                    Console.Write("error: ");
+                    output.SetColor(textColor);
+                    output.Write("error: ");
                     break;
                 case MessageKind.Warning:
                     textColor = ConsoleColor.Yellow;
-                    Console.ForegroundColor = textColor;
-                    Console.Write("warning: ");
+                    output.SetColor(textColor);
+                    output.Write("warning: ");
                     break;
                 case MessageKind.Info:
                     textColor = ConsoleColor.Cyan;
-                    Console.ForegroundColor = textColor;
-                    Console.Write("note: ");
+                    output.SetColor(textColor);
+                    output.Write("note: ");
                     break;
                 case MessageKind.Lint:
                     textColor = ConsoleColor.Magenta;
-                    Console.ForegroundColor = textColor;
-                    Console.Write("lint: ");
+                    output.SetColor(textColor);
+                    output.Write("lint: ");
                     break;
             }
 
-            Console.WriteLine(msg.descr);
+            output.WriteLine(msg.descr);
 
             // Print annotated source code.
             var curCaret = 0;
@@ -183,9 +179,9 @@ namespace pocketl.diagn
                 lines.Sort();
 
                 // Print unit name.
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("   --> {0}", unit.name);
-                Console.WriteLine("     |");
+                output.SetColor(ConsoleColor.DarkGray);
+                output.WriteLine("   --> " + unit.name);
+                output.WriteLine("     |");
 
                 // Print source code lines.
                 var lastLinePrinted = (int?)null;
@@ -195,36 +191,36 @@ namespace pocketl.diagn
                         continue;
 
                     // Print line number.
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    output.SetColor(ConsoleColor.DarkGray);
 
                     if (lastLinePrinted.HasValue && line != lastLinePrinted.Value + 1)
-                        Console.WriteLine("    ...");
+                        output.WriteLine("    ...");
 
                     lastLinePrinted = line;
 
-                    Console.Write("{0,4} | ", line + 1);
+                    output.Write("{0,4} | ", line + 1);
 
                     // Print line text.
                     var range = util.CharCounter.IndexRangeOfLine(src, line);
 
-                    Console.ForegroundColor = ConsoleColor.White;
+                    output.SetColor(ConsoleColor.White);
                     for (var i = range.start; i < range.end; i++)
                     {
                         // Add a space for spans of zero characters.
                         if (carets.Find(c => i == c.span.start && i == c.span.end) != null)
-                            Console.Write(" ");
+                            output.Write(" ");
 
                         // Print char with special handling for whitespace.
                         switch (src[i])
                         {
-                            case '\t': Console.Write("  "); break;
-                            case '\r': Console.Write(""); break;
-                            case '\n': Console.Write(""); break;
-                            default: Console.Write(src[i]); break;
+                            case '\t': output.Write("  "); break;
+                            case '\r':
+                            case '\n': break;
+                            default: output.Write(src[i].ToString()); break;
                         }
                     }
 
-                    Console.WriteLine();
+                    output.WriteLine();
 
                     // Print line caret markings.
                     var hasAnyMarkings =
@@ -232,16 +228,16 @@ namespace pocketl.diagn
 
                     if (hasAnyMarkings)
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.Write("     | ");
-                        Console.ForegroundColor = textColor;
+                        output.SetColor(ConsoleColor.DarkGray);
+                        output.Write("     | ");
+                        output.SetColor(textColor);
 
                         for (var i = range.start; i < range.end; i++)
                         {
                             // Print marking for spans of zero characters.
                             var zeroCharCaret = carets.Find(c => i == c.span.start && i == c.span.end);
                             if (zeroCharCaret != null)
-                                Console.Write(zeroCharCaret.primary ? "^" : "-");
+                                output.Write(zeroCharCaret.primary ? "^" : "-");
 
                             // Print marking with special handling for whitespace.
                             var marking = " ";
@@ -251,14 +247,14 @@ namespace pocketl.diagn
 
                             switch (src[i])
                             {
-                                case '\t': Console.Write("{0}{0}", marking); break;
-                                case '\r': Console.Write(""); break;
-                                case '\n': Console.Write(""); break;
-                                default: Console.Write("{0}", marking); break;
+                                case '\t': output.Write(marking + marking); break;
+                                case '\r': output.Write(""); break;
+                                case '\n': output.Write(""); break;
+                                default: output.Write(marking); break;
                             }
                         }
 
-                        Console.WriteLine();
+                        output.WriteLine();
                     }
                 }
             }
