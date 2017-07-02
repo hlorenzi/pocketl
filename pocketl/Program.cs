@@ -20,6 +20,8 @@
             pass.Collector.Collect(ctx, reporter, unit);
             pass.NameResolver.Resolve(ctx, reporter, unit);
             pass.StructureResolver.Resolve(ctx, reporter, unit);
+            pass.FunctionHeaderResolver.Resolve(ctx, reporter, unit);
+            pass.FunctionBodyResolver.Resolve(ctx, reporter, unit);
 
             ctx[unit].ast.PrintToConsole(ctx, ctx[unit].semanticMap);
             ctx.names.PrintToConsole(ctx, true);
@@ -43,36 +45,20 @@
 
             fn hello(x: Int, y: Float)
             {
-                a = Test { };
-                a = hello;
+                {};
+                {};
+                {{}; {}; {}};
 
-                a;
-                a = b + c + d;
-                a = b = c + d * e + f;
-                a = b + !!!!c;
-                a = b!!!! + c;
-                a = (-!-!b!!!!);
-                a.b.c = d.e!;
+                let z = x;
 
-                a = 123;
-                a = ();
-                a = (0,);
-                a = (0);
-                a = (0, 1, 2);
+                x;
+                y;
+                z;
 
-                a = b;
-                a = b {};
-                a = b { c = 0 };
-                a = b.x.y { c = 0, d = 1 };
+                x = y;
+                x = y = z;
 
-                if x { a };
-                if x { a } else { b };
-                while x { a };
-                loop { a };
-                break;
-                continue;
-                return;
-                return a;
+                x = (y, z, w);
             }
         ";
     }

@@ -282,6 +282,24 @@ namespace pocketl.syn
         }
 
 
+        public class Let : Node
+        {
+            public Node identifier;
+            public Node type;
+            public Node expr;
+
+
+            public override IEnumerable<Node> Children()
+            {
+                yield return this.identifier;
+                if (this.type != null)
+                    yield return this.type;
+                if (this.expr != null)
+                    yield return this.expr;
+            }
+        }
+
+
         public class If : Node
         {
             public Node condition;

@@ -414,6 +414,22 @@ namespace pocketl.pass
         }
 
 
+        private Node ParseLet()
+        {
+            var node = new Node.Let();
+            node.AddSpan(this.Expect(TokenKind.KeywordLet).span);
+            node.identifier = this.ParseIdentifier();
+
+            if (this.ExpectMaybe(TokenKind.Colon) != null)
+                node.type = this.ParseType();
+
+            if (this.ExpectMaybe(TokenKind.Equal) != null)
+                node.expr = this.ParseExpr();
+
+            return node;
+        }
+
+
         private Node ParseIf()
         {
             var node = new Node.If();
@@ -654,6 +670,9 @@ namespace pocketl.pass
 
                 case TokenKind.ParenOpen:
                     return this.ParseParenthesizedOrLiteralTuple();
+
+                case TokenKind.KeywordLet:
+                    return this.ParseLet();
 
                 case TokenKind.KeywordIf:
                     return this.ParseIf();

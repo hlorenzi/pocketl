@@ -35,6 +35,12 @@ namespace pocketl.diagn
         }
 
 
+        public string Excerpt(Context ctx)
+        {
+            return ctx[unit].ReadSource(ctx).Substring(this.start, this.Length);
+        }
+
+
         public static Span operator +(Span a, Span b)
         {
             if (a == null)

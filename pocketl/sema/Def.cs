@@ -48,23 +48,13 @@ namespace pocketl.sema
 
         public class Function : Def
         {
-            public class Parameter
-            {
-                public diagn.Span spanDef;
-                public diagn.Span spanDefName;
-                public string name;
-                public Type type;
-            }
-
-
-            public diagn.Span spanReturnType;
-            public Type returnType;
-            public List<Parameter> parameters = new List<Parameter>();
+            public Code.Body body;
 
 
             public override void PrintToConsole(Context ctx, int indent = 0)
             {
                 Console.WriteLine("fn");
+                this.body.PrintToConsole(ctx, indent);
             }
         }
     }

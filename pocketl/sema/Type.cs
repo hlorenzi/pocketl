@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 
 namespace pocketl.sema
@@ -17,6 +16,15 @@ namespace pocketl.sema
             public override string PrintableName(Context ctx)
             {
                 return "<error>";
+            }
+        }
+
+
+        public class Placeholder : Type
+        {
+            public override string PrintableName(Context ctx)
+            {
+                return "_";
             }
         }
 

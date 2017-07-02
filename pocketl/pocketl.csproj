@@ -49,7 +49,10 @@
     <Compile Include="diagn\Reporter.cs" />
     <Compile Include="diagn\Span.cs" />
     <Compile Include="mod\Unit.cs" />
+    <Compile Include="pass\CodeResolver.cs" />
     <Compile Include="pass\Collector.cs" />
+    <Compile Include="pass\FunctionBodyResolver.cs" />
+    <Compile Include="pass\FunctionHeaderResolver.cs" />
     <Compile Include="pass\NameResolver.cs" />
     <Compile Include="pass\Parser.cs" />
     <Compile Include="pass\StructureResolver.cs" />
@@ -57,6 +60,7 @@
     <Compile Include="pass\TypeResolver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="sema\Code.cs" />
     <Compile Include="sema\Def.cs" />
     <Compile Include="sema\Map.cs" />
     <Compile Include="sema\Namespace.cs" />

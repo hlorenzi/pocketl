@@ -96,6 +96,7 @@ namespace pocketl.pass
                 new Match("type", syn.TokenKind.KeywordType),
                 new Match("struct", syn.TokenKind.KeywordStruct),
                 new Match("mut", syn.TokenKind.KeywordMut),
+                new Match("let", syn.TokenKind.KeywordLet),
                 new Match("if", syn.TokenKind.KeywordIf),
                 new Match("else", syn.TokenKind.KeywordElse),
                 new Match("while", syn.TokenKind.KeywordWhile),

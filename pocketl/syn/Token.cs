@@ -19,6 +19,7 @@
         KeywordType,
         KeywordStruct,
         KeywordMut,
+        KeywordLet,
         KeywordIf,
         KeywordElse,
         KeywordWhile,
