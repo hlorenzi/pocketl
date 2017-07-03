@@ -104,6 +104,8 @@ namespace pocketl.pass
                 new Match("break", syn.TokenKind.KeywordBreak),
                 new Match("continue", syn.TokenKind.KeywordContinue),
                 new Match("return", syn.TokenKind.KeywordReturn),
+                new Match("true", syn.TokenKind.KeywordTrue),
+                new Match("false", syn.TokenKind.KeywordFalse)
             };
 
             // Check whether one of the models match.

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 
 namespace pocketl.sema
@@ -24,6 +23,12 @@ namespace pocketl.sema
             public void AddInstruction(int segmentIndex, Instruction instr)
             {
                 this.segments[segmentIndex].instrs.Add(instr);
+            }
+
+
+            public void SetTerminator(int segmentIndex, Terminator term)
+            {
+                this.segments[segmentIndex].terminator = term;
             }
 
 
@@ -91,6 +96,15 @@ namespace pocketl.sema
             }
 
 
+            public class Error : Terminator
+            {
+                public override void PrintDebug(util.Output output, Context ctx)
+                {
+                    output.Write("goto <error>");
+                }
+            }
+
+
             public class Return : Terminator
             {
                 public override void PrintDebug(util.Output output, Context ctx)
@@ -129,21 +143,6 @@ namespace pocketl.sema
         }
 
 
-        public class PrimitiveNumber
-        {
-            public enum Type
-            {
-                Int8, Int16, Int32, Int64,
-                UInt8, UInt16, UInt32, UInt64,
-                Float32, Float64
-            }
-
-            public ulong unsignedValue;
-            public long signedValue;
-            public double floatValue;
-        }
-
-
         public abstract class Instruction
         {
             public diagn.Span span;
@@ -159,19 +158,36 @@ namespace pocketl.sema
             protected void PrintDebugExcerpt(util.Output output, Context ctx)
             {
                 output.AlignColumn(40);
-                output.Write("# " + this.span.Excerpt(ctx));
+                output.Write("# " + this.span.CompressedExcerpt(ctx, 30));
             }
 
 
             public class CopyLiteralNumber : Instruction
             {
-                public PrimitiveNumber number;
+                public string excerpt;
+
+
+                public override void PrintDebug(util.Output output, Context ctx)
+                {
+                    this.destination.PrintDebug(output, ctx);
+                    output.Write(" = " + this.excerpt);
+                    this.PrintDebugExcerpt(output, ctx);
+                }
             }
 
 
             public class CopyLiteralBool : Instruction
             {
                 public bool value;
+
+
+                public override void PrintDebug(util.Output output, Context ctx)
+                {
+                    this.destination.PrintDebug(output, ctx);
+                    output.Write(" = ");
+                    output.Write(this.value ? "true" : "false");
+                    this.PrintDebugExcerpt(output, ctx);
+                }
             }
 
 

@@ -41,6 +41,42 @@ namespace pocketl.diagn
         }
 
 
+        public string CompressedExcerpt(Context ctx, int maxLength = 0)
+        {
+            var excerpt = this.Excerpt(ctx);
+            var compressed = "";
+            var skip = false;
+            var length = 0;
+
+            foreach (var c in excerpt)
+            {
+                if (maxLength != 0 && length >= maxLength)
+                {
+                    compressed += "...";
+                    break;
+                }
+
+                if (c == ' ' || c == '\t' || c == '\r' || c == '\n')
+                {
+                    if (!skip)
+                    {
+                        skip = true;
+                        compressed += " ";
+                        length++;
+                    }
+                }
+                else
+                {
+                    skip = false;
+                    compressed += c;
+                    length++;
+                }
+            }
+
+            return compressed;
+        }
+
+
         public static Span operator +(Span a, Span b)
         {
             if (a == null)

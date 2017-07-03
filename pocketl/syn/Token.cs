@@ -27,6 +27,8 @@
         KeywordBreak,
         KeywordContinue,
         KeywordReturn,
+        KeywordTrue,
+        KeywordFalse,
         BraceOpen,
         BraceClose,
         ParenOpen,
@@ -69,6 +71,8 @@
                 case TokenKind.KeywordBreak: return "`break`";
                 case TokenKind.KeywordContinue: return "`continue`";
                 case TokenKind.KeywordReturn: return "`return`";
+                case TokenKind.KeywordTrue: return "`true`";
+                case TokenKind.KeywordFalse: return "`false`";
                 case TokenKind.BraceOpen: return "`{`";
                 case TokenKind.BraceClose: return "`}`";
                 case TokenKind.ParenOpen: return "`(`";

@@ -404,6 +404,23 @@ namespace pocketl.pass
         }
 
 
+        private Node ParseLiteralBool()
+        {
+            if (this.Current.kind == TokenKind.KeywordTrue)
+            {
+                var node = new Node.LiteralBool { value = true };
+                node.AddSpan(this.Expect(TokenKind.KeywordTrue).span);
+                return node;
+            }
+            else
+            {
+                var node = new Node.LiteralBool { value = false };
+                node.AddSpan(this.Expect(TokenKind.KeywordFalse).span);
+                return node;
+            }
+        }
+
+
         private Node ParseLiteralStructureField()
         {
             var node = new Node.LiteralStructureField();
@@ -697,6 +714,10 @@ namespace pocketl.pass
 
                 case TokenKind.Number:
                     return this.ParseNumber();
+
+                case TokenKind.KeywordTrue:
+                case TokenKind.KeywordFalse:
+                    return this.ParseLiteralBool();
 
                 default:
                     this.ErrorBeforeCurrent("expected expression");

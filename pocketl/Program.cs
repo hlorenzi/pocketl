@@ -61,6 +61,43 @@
                 x = y = z;
 
                 x = (y, z, w);
+    
+                x = 0;
+                y = (123);
+                x = true;
+                y = false;
+
+                if x
+                    { y };
+
+                if x
+                    { y }
+                else
+                    { z };
+
+                while x
+                    { y };
+
+                loop
+                    { x };
+
+                break;
+                continue;
+
+                loop
+                {
+                    x;
+                    break;
+                };
+
+                while y
+                {
+                    x;
+                    continue;
+                };
+
+                return x;
+                return;
             }
         ";
     }

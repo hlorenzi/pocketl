@@ -381,6 +381,12 @@ namespace pocketl.syn
         }
 
 
+        public class LiteralBool : Node
+        {
+            public bool value;
+        }
+
+
         public class LiteralTuple : Node
         {
             public List<Node> elems = new List<Node>();
